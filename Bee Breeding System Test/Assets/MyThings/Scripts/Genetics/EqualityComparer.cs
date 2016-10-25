@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using Bees.Genetics.Enums;
 
-namespace Bee
+namespace Bees.Genetics
 {
-    public class EqualityComparer : IEqualityComparer<EnumBeeSpecies[]>
+    public class EqualityComparer : IEqualityComparer<BeeSpecies[]>
     {
-        EnumBeeSpecies[] keyToFind;
+        BeeSpecies[] keyToFind;
 
-        public bool Equals(EnumBeeSpecies[] x, EnumBeeSpecies[] y)
+        public bool Equals(BeeSpecies[] x, BeeSpecies[] y)
         {
             if(x.Length != y.Length)
             {
@@ -24,7 +25,7 @@ namespace Bee
             return true;
         }
 
-        public int GetHashCode(EnumBeeSpecies[] obj)
+        public int GetHashCode(BeeSpecies[] obj)
         {
             int result = 17;
 

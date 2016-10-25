@@ -1,0 +1,25 @@
+﻿using Bees.Entity;
+using Bees.Genetics.Enums;
+
+namespace Bees
+{
+    [System.Serializable]
+    public class Bee : BeeEntity
+    {
+        public BeeSpecies species;
+        public TempratureTolarence temp;
+
+        public Bee(BeeSpecies _species, TempratureTolarence _tolerance) : base(_species, _tolerance)
+        {
+            species = _species;
+            temp = _tolerance;
+        }
+
+        public void AssignVariables(int? _slotindex, BeeSpecies _species, TempratureTolarence _temp)
+        {
+            slotindex = _slotindex;
+            species = _species;
+            temp = _temp;
+        }
+    }
+}

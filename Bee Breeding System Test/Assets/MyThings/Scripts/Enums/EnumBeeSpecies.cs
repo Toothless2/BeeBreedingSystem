@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Bee
+namespace Bees.Genetics.Enums
 {
-    public enum EnumBeeSpecies
+    public enum BeeSpecies
     {
         MISSING, MEADOWS, FOREST
     };
