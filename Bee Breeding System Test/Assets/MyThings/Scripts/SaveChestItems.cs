@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using GameMaster;
 using Items;
 
@@ -9,15 +9,25 @@ namespace Inventory
     {
         private float waitTime;
         public InventoryManager chestInventory;
+        [SerializeField]
+        private int prevListCount;
 
         void Start()
         {
             chestInventory = gameObject.GetComponentInChildren<InventoryManager>();
-            chestInventory.gameObject.SetActive(false);
             Debug.Assert(chestInventory != null);
-            AccesGameMaster.gameMaster.AddChestToSave(gameObject.name, transform.position, chestInventory.itemsCurrentlyInInventory);
+
+            prevListCount = chestInventory.itemsCurrentlyInInventory.Count;
         }
         
-        //TODO Resave then things added to chest
+        void Update()
+        {
+            //When item Added/Removed from the inventory it is updated
+            if(prevListCount != chestInventory.itemsCurrentlyInInventory.Count)
+            {
+                AccesGameMaster.gameMaster.AddChestToSave(gameObject.name, transform.position, chestInventory.itemsCurrentlyInInventory);
+                prevListCount = chestInventory.itemsCurrentlyInInventory.Count;
+            }
+        }
     }
 }

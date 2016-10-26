@@ -2,22 +2,17 @@
 using Items;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
-using System;
 
 namespace Inventory
 {
     public class InventoryManager : MonoBehaviour
     {
-        private int test;
+        public int test;
+        public GameObject slotHolder;
         public GameObject[] inventorySlots;
         public GameObject objectHolder;
         public List<Item> itemsCurrentlyInInventory;
         public Item floatingItem;
-
-        void OnEnable()
-        {
-            AddItemsToInventory();
-        }
 
         void IndexSlots()
         {
@@ -67,7 +62,11 @@ namespace Inventory
         
         void Update()
         {
-            if(Input.GetMouseButton(1) && floatingItem != null)
+            test++;
+            AddItemsToInventory();
+
+            //find the tiem clicked on and moves it to floating items
+            if (Input.GetMouseButton(1) && floatingItem != null)
             {
                 itemsCurrentlyInInventory.RemoveAt((int)floatingItem.slotindex);
                 floatingItem.slotindex = null;

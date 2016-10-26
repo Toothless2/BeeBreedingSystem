@@ -23,13 +23,12 @@ namespace GameMaster
         
         void Update()
         {
-            print(chestSave.Count);
             if(Time.time > waitTime)
             {
-                print("Saved");
-                waitTime = Time.time + Random.Range(100, 500);
+                waitTime = Time.time + Random.Range(10, 100);
 
                 SaveChest();
+                print("Saved");
             }
         }
         
@@ -41,14 +40,16 @@ namespace GameMaster
                 //if the chest already has an entry remove it
                 if (chestSave.ContainsKey(chestName))
                 {
+                    print("ItemRemoved");
                     chestSave.Remove(chestName);
                 }
             }
             
             ChestSave chest = new ChestSave();
-            
+            //removes the numbers from the chest name
             chest = SaveChestPozAndName(chestName.Split(new char[] { ' ' })[0], chestPosition);
 
+            //goes through each item in the chest
             foreach (var item in chestItems)
             {
                 if (item.gameObject.GetComponent<Bee>() != null)
@@ -111,12 +112,17 @@ namespace GameMaster
 
         void RemakeChests()
         {
+            //Goes through each chest in the list
             foreach (var chest in chestLoad)
             {
+                //makes the gameobject
                 GameObject makeObject = Instantiate(ItemDictionary.AccesObjectDatabase(chest.Value.name));
+                //sets the name to the key
                 makeObject.name = chest.Key;
+                //puts the object in the correct poz
                 makeObject.transform.position = new Vector3(chest.Value.x, chest.Value.y, chest.Value.z);
 
+                //goes through each item that is supposed to be in the chest
                 foreach (var item in chest.Value.bee)
                 {
                     //Makes the Bee Gameobject
@@ -143,6 +149,9 @@ namespace GameMaster
         }
     }
 
+    //Serializable classes making life easier
+
+    //Chest class
     [System.Serializable]
     public class ChestSave
     {
@@ -154,6 +163,21 @@ namespace GameMaster
         public List<SerializableBee> bee = new List<SerializableBee>();
     }
 
+    //Items
+    [System.Serializable]
+    public class SerialzableItem
+    {
+        public string name;
+        public int? slotIndex;
+
+        public SerialzableItem(string _itemName, int? _slotIndex)
+        {
+            name = _itemName;
+            slotIndex = _slotIndex;
+        }
+    }
+
+    //Bee
     [System.Serializable]
     public class SerializableBee
     {
