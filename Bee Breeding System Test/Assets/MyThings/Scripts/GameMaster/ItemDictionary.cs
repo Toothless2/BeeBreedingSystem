@@ -5,6 +5,8 @@ namespace Items
 {
     public class ItemDictionary : MonoBehaviour
     {
+        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+
         public GameObject[] objectList;
 
         private static Dictionary<string, GameObject> objectDictionary = new Dictionary<string, GameObject>();
@@ -12,10 +14,19 @@ namespace Items
         //adds the items from the array into the dictionary
         void Awake()
         {
+            stopwatch.Reset();
+            stopwatch.Start();
+
             foreach (var item in objectList)
             {
-                objectDictionary.Add(item.name, item);
+                if(!objectDictionary.ContainsKey(item.name))
+                {
+                    objectDictionary.Add(item.name, item);
+                }
             }
+
+            stopwatch.Stop();
+            Debug.Log("Time to complete getting items: " + stopwatch.ElapsedMilliseconds);
         }
 
         //Gets objects in the game;
