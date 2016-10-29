@@ -26,7 +26,7 @@ namespace Items
             }
 
             stopwatch.Stop();
-            Debug.Log("Time to complete getting items: " + stopwatch.ElapsedMilliseconds);
+            //Debug.Log("Time to complete getting items: " + stopwatch.ElapsedMilliseconds);
         }
 
         //Gets objects in the game;

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.IO;
@@ -30,7 +31,13 @@ namespace GameMaster
             {
                 waitTime = Time.time + Random.Range(10, 100);
 
-                SaveChest();
+                string _path = Application.dataPath;
+
+                Thread chests = new Thread(() => SaveChest(chestSave, _path));
+                Thread player = new Thread(() => SavePlayer(playerSave, _path));
+                chests.Start();
+                player.Start();
+
                 print("Saved");
             }
         }
@@ -103,15 +110,35 @@ namespace GameMaster
             chestSave.Add(chestName, chest);
         }
 
-        //saves the dictionary
-        void SaveChest()
+        void SavePlayer(Dictionary<string, SavePlayer> _playerSave, string path)
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream fs = new FileStream(Application.dataPath + "/Saves/Chests.dat", FileMode.OpenOrCreate);
+            FileStream fs = new FileStream(path + "/Saves/Players.dat", FileMode.OpenOrCreate); 
 
             try
             {
-                bf.Serialize(fs, chestSave);
+                bf.Serialize(fs, _playerSave);
+            }
+            catch(SerializationException e)
+            {
+                print("Failed to Deserialize Player: " + e);
+                throw;
+            }
+            finally
+            {
+                fs.Close();
+            }
+        }
+
+        //saves the dictionary
+        void SaveChest(Dictionary<string, ChestSave> _saveChests, string path)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream fs = new FileStream(path + "/Saves/Chests.dat", FileMode.OpenOrCreate);
+
+            try
+            {
+                bf.Serialize(fs, _saveChests);
             }
             catch (SerializationException e)
             {
