@@ -14,6 +14,9 @@ namespace GameMaster
         public Dictionary<string, ChestSave> chestSave = new Dictionary<string, ChestSave>();
         public Dictionary<string, ChestSave> chestLoad = new Dictionary<string, ChestSave>();
 
+        public Dictionary<string, SavePlayer> playerSave = new Dictionary<string, SavePlayer>();
+        public Dictionary<string, SavePlayer> playerLoad = new Dictionary<string, SavePlayer>();
+
         private float waitTime = 10;
 
         void Start()
@@ -29,6 +32,41 @@ namespace GameMaster
 
                 SaveChest();
                 print("Saved");
+            }
+        }
+        
+        public void SavePlayer(string playerName, Transform playerTransform, List<Item> playerInventory)
+        {
+            if(playerLoad.ContainsKey(playerName))
+            {
+                playerLoad.Remove(playerName);
+            }
+
+            SavePlayer playerData = new SavePlayer();
+
+            playerData.SavePoz(playerTransform.position);
+            playerData.SaveRot(new Vector3(playerTransform.rotation.x, playerTransform.rotation.y, playerTransform.rotation.z));
+
+            foreach (var item in playerInventory)
+            {
+                if (item.gameObject.GetComponent<Bee>() != null)
+                {
+                    playerData.bees.Add(new SerializableBee(item.gameObject.GetComponent<Bee>()));
+                }
+                else if (item.gameObject.GetComponent<Item>() != null)
+                {
+                    playerData.items.Add(new SerialzableItem(item.gameObject.GetComponent<Item>()));
+                }
+            }
+
+            playerSave.Add(playerName, playerData);
+        }
+
+        public void RemoveChest(string chestName)
+        {
+            if(chestSave.ContainsKey(chestName))
+            {
+                chestSave.Remove(chestName);
             }
         }
         
@@ -54,7 +92,11 @@ namespace GameMaster
             {
                 if (item.gameObject.GetComponent<Bee>() != null)
                 {
-                    chest.bee.Add(new SerializableBee(item.gameObject.GetComponent<Bee>()));
+                    chest.bees.Add(new SerializableBee(item.gameObject.GetComponent<Bee>()));
+                }
+                else if (item.gameObject.GetComponent<Item>() != null)
+                {
+                    chest.items.Add(new SerialzableItem(item.gameObject.GetComponent<Item>()));
                 }
             }
 
@@ -65,7 +107,7 @@ namespace GameMaster
         void SaveChest()
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream fs = new FileStream(Application.dataPath + "/Saves/testSave.dat", FileMode.OpenOrCreate);
+            FileStream fs = new FileStream(Application.dataPath + "/Saves/Chests.dat", FileMode.OpenOrCreate);
 
             try
             {
@@ -85,11 +127,11 @@ namespace GameMaster
         //Loads the saved dictionary into memory
         void LoadChest()
         {
-            if(File.Exists(Application.dataPath + "/Saves/testSave.dat"))
+            if(File.Exists(Application.dataPath + "/Saves/Chests.dat"))
             {
                 BinaryFormatter bf = new BinaryFormatter();
 
-                FileStream fs = new FileStream(Application.dataPath + "/Saves/testSave.dat", FileMode.Open);
+                FileStream fs = new FileStream(Application.dataPath + "/Saves/Chests.dat", FileMode.Open);
 
                 try
                 {
@@ -123,7 +165,7 @@ namespace GameMaster
                 makeObject.transform.position = new Vector3(chest.Value.x, chest.Value.y, chest.Value.z);
 
                 //goes through each item that is supposed to be in the chest
-                foreach (var item in chest.Value.bee)
+                foreach (var item in chest.Value.bees)
                 {
                     //Makes the Bee Gameobject
                     GameObject bee = Instantiate(ItemDictionary.AccesObjectDatabase("Bee"));
@@ -150,6 +192,36 @@ namespace GameMaster
     }
 
     //Serializable classes making life easier
+    [System.Serializable]
+    public class SavePlayer
+    {
+        public string playerName;
+
+        public float pozX;
+        public float pozY;
+        public float pozZ;
+
+        public float rotX;
+        public float rotY;
+        public float rotZ;
+
+        public List<SerializableBee> bees = new List<SerializableBee>();
+        public List<SerialzableItem> items = new List<SerialzableItem>();
+
+        public void SavePoz(Vector3 poz)
+        {
+            pozX = poz.x;
+            pozY = poz.y;
+            pozZ = poz.z;
+        }
+
+        public void SaveRot(Vector3 rot)
+        {
+            rotX = rot.x;
+            rotY = rot.y;
+            rotZ = rot.z;
+        }
+    }
 
     //Chest class
     [System.Serializable]
@@ -160,7 +232,8 @@ namespace GameMaster
         public float y;
         public float z;
 
-        public List<SerializableBee> bee = new List<SerializableBee>();
+        public List<SerializableBee> bees = new List<SerializableBee>();
+        public List<SerialzableItem> items = new List<SerialzableItem>();
     }
 
     //Items
@@ -170,10 +243,10 @@ namespace GameMaster
         public string name;
         public int? slotIndex;
 
-        public SerialzableItem(string _itemName, int? _slotIndex)
+        public SerialzableItem(Item _item)
         {
-            name = _itemName;
-            slotIndex = _slotIndex;
+            name = _item.itemName;
+            slotIndex = _item.slotindex;
         }
     }
 
